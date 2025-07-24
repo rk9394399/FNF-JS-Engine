@@ -43,6 +43,7 @@ import llua.State;
 
 #if (!flash && sys)
 import flixel.addons.display.FlxRuntimeShader;
+import shaders.ErrorHandledShader;
 #end
 
 #if sys
@@ -304,7 +305,7 @@ class FunkinLua {
 
 			if(leObj != null) {
 				var arr:Array<String> = PlayState.instance.runtimeShaders.get(shader);
-				leObj.shader = new FlxRuntimeShader(arr[0], arr[1]);
+				leObj.shader = new ErrorHandledRuntimeShader(shader, arr[0], arr[1]);
 				return true;
 			}
 			#else
@@ -345,7 +346,7 @@ class FunkinLua {
             @:privateAccess {
             if (camera.filters == null)
                 camera.filters = [];
-				final filter = new ShaderFilter(new FlxRuntimeShader(arr[0], arr[1]));
+				final filter = new ShaderFilter(new ErrorHandledRuntimeShader(shader, arr[0], arr[1]));
 				storedFilters.set(index, filter);
 				camera.filters.push(filter);
             }
@@ -3606,6 +3607,7 @@ class HScript
 		interp.variables.set('CustomSubstate', CustomSubstate);
 		#if (!flash && sys)
 		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
+		interp.variables.set('ErrorHandledRuntimeShader', ErrorHandledRuntimeShader);
 		#end
 		interp.variables.set('ShaderFilter', ShaderFilter);
 		interp.variables.set('StringTools', StringTools);
