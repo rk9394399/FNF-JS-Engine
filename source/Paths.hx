@@ -3,14 +3,11 @@ package;
 import flixel.animation.FlxAnimationController;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
-import haxe.Json;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import lime.media.AudioBuffer;
 import lime.media.vorbis.VorbisFile;
-import lime.utils.Assets;
 import openfl.display.BitmapData;
 import openfl.display.BitmapData;
 import openfl.display3D.textures.RectangleTexture;
@@ -19,12 +16,8 @@ import openfl.geom.Rectangle;
 import openfl.media.Sound;
 import openfl.system.System;
 import openfl.utils.AssetType;
-import openfl.utils.Assets as OpenFlAssets;
 
-using StringTools;
 #if sys
-import sys.FileSystem;
-import sys.io.File;
 #end
 #if cpp
 import cpp.vm.Gc;
@@ -665,7 +658,7 @@ class Paths
 			return true;
 		}
 		#end
-		
+
 		if (OpenFlAssets.exists(key, type)) {
 			return true;
 		}
@@ -679,13 +672,13 @@ class Paths
 			return true;
 		}
 		#end
-		
+
 		if (OpenFlAssets.exists(getPath(key, type, library), type)) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	inline public static function getContent(path:String) {
 		#if sys
 		if (path.contains(':'))

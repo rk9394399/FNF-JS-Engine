@@ -14,24 +14,16 @@ import Song.SwagSong;
 import StageData;
 import editors.CharacterEditorState;
 import editors.ChartingState;
-import flixel.FlxObject;
 import flixel.input.keyboard.FlxKey;
 import flixel.ui.FlxBar;
-import flixel.util.FlxSave;
 import flixel.util.FlxSort;
-import flixel.util.FlxStringUtil;
-import haxe.Json;
 import lime.system.System;
-import lime.utils.Assets;
 import objects.*;
 import openfl.events.KeyboardEvent;
 import openfl.filters.BitmapFilter;
-import openfl.utils.Assets as OpenFlAssets;
-import utils.*;
-#if !flash
-import shaders.ErrorHandledShader;
 import openfl.filters.ShaderFilter;
-#end
+import shaders.ErrorHandledShader;
+import utils.*;
 
 
 class PlayState extends MusicBeatState
@@ -159,8 +151,6 @@ class PlayState extends MusicBeatState
 	public var playerStrums:FlxTypedGroup<StrumNote>;
 	public var grpHoldSplashes:FlxTypedGroup<SustainSplash>;
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
-	public var laneunderlay:FlxSprite;
-	public var laneunderlayOpponent:FlxSprite;
 
 	public var camZooming:Bool = false;
 	public var camZoomingMult:Float = 1;
@@ -879,24 +869,6 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000 / Conductor.songPosition;
 
-		laneunderlayOpponent = new FlxSprite(70, 0).makeGraphic(500, FlxG.height * 2, FlxColor.BLACK);
-		laneunderlayOpponent.alpha = ClientPrefs.laneUnderlayAlpha;
-		laneunderlayOpponent.scrollFactor.set();
-		laneunderlayOpponent.screenCenter(Y);
-		laneunderlayOpponent.visible = ClientPrefs.laneUnderlay;
-
-		laneunderlay = new FlxSprite(70 + (FlxG.width / 2), 0).makeGraphic(500, FlxG.height * 2, FlxColor.BLACK);
-		laneunderlay.alpha = ClientPrefs.laneUnderlayAlpha;
-		laneunderlay.scrollFactor.set();
-		laneunderlay.screenCenter(Y);
-		laneunderlay.visible = ClientPrefs.laneUnderlay;
-
-		if (ClientPrefs.laneUnderlay)
-		{
-			insert(1, laneunderlayOpponent);
-			insert(1, laneunderlay);
-		}
-
 		popUpGroup = new FlxTypedSpriteGroup<Popup>();
 		add(popUpGroup);
 
@@ -1513,8 +1485,6 @@ class PlayState extends MusicBeatState
 		if (ClientPrefs.showRendered)
 			renderedTxt.text = 'Rendered Notes: ' + formatNumber(notes.length);
 
-		laneunderlayOpponent.cameras = [camHUD];
-		laneunderlay.cameras = [camHUD];
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
 		grpHoldSplashes.cameras = [camHUD];
@@ -1628,13 +1598,13 @@ class PlayState extends MusicBeatState
 		startingTime = haxe.Timer.stamp();
 	}
 
-	#if (!flash && sys)
+	#if ( sys)
 	public var runtimeShaders:Map<String, Array<String>> = new Map<String, Array<String>>();
 	public function createRuntimeShader(shaderName:String):ErrorHandledRuntimeShader
 	{
 		if(!ClientPrefs.shaders) return new ErrorHandledRuntimeShader(shaderName);
 
-		#if (!flash && MODS_ALLOWED && sys)
+		#if (MODS_ALLOWED && sys)
 		if(!runtimeShaders.exists(shaderName) && !initLuaShader(shaderName))
 		{
 			FlxG.log.warn('Shader $shaderName is missing!');
@@ -2211,11 +2181,6 @@ class PlayState extends MusicBeatState
 			secretsong.cameras = [camGame];
 			add(secretsong);
 		}
-		if (middleScroll)
-		{
-			laneunderlayOpponent.alpha = 0;
-			laneunderlay.screenCenter(X);
-		}
 
 		if(ret != FunkinLua.Function_Stop) {
 			if (skipCountdown || startOnTime > 0) skipArrowStartTween = true;
@@ -2421,6 +2386,7 @@ class PlayState extends MusicBeatState
 		if (!scoreTxt.visible || scoreTxt == null)
 			return;
 		//GAH DAYUM THIS IS MORE OPTIMIZED THAN BEFORE
+		//No it's not
 		var divider = switch (ClientPrefs.scoreStyle)
 		{
 			case 'Leather Engine': '~';
