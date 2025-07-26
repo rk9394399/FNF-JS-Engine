@@ -1,21 +1,9 @@
 package editors;
 
-import lime.ui.FileDialogType;
-import lime.ui.FileDialog;
-import openfl.geom.Rectangle;
-import haxe.Json;
-import haxe.format.JsonParser;
-import haxe.io.Bytes;
+import Character.CharacterFile;
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
 import Song.SwagSong;
-import flixel.util.FlxTimer;
-import flixel.FlxG;
-import openfl.Lib;
-import flixel.FlxObject;
-import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
@@ -25,39 +13,30 @@ import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUISlider;
 import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
-import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
-import flixel.sound.FlxSound;
-import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
-import flixel.util.FlxColor;
-import flixel.util.FlxStringUtil;
 import flixel.util.FlxSort;
+import haxe.format.JsonParser;
+import haxe.io.Bytes;
 import lime.media.AudioBuffer;
-import lime.utils.Assets;
+import lime.ui.FileDialog;
+import lime.ui.FileDialogType;
+import openfl.Lib;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
+import openfl.events.UncaughtErrorEvent;
+import openfl.geom.Rectangle;
 import openfl.media.Sound;
 import openfl.net.FileReference;
-import openfl.utils.Assets as OpenFlAssets;
 import openfl.utils.ByteArray;
-import openfl.events.UncaughtErrorEvent;
-using StringTools;
+import shaders.RGBPalette.RGBShaderReference;
+import shaders.RGBPalette;
+
 #if sys
-import sys.FileSystem;
-import sys.io.File;
 #end
 
-import Character.CharacterFile;
-import shaders.RGBPalette;
-import shaders.RGBPalette.RGBShaderReference;
 
 @:access(flixel.sound.FlxSound._sound)
 @:access(openfl.media.Sound.__buffer)
@@ -620,7 +599,6 @@ class ChartingState extends MusicBeatState
 		UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
 		UI_songTitle.focusGained = () -> FlxG.stage.window.textInputEnabled = true;
 		blockPressWhileTypingOn.push(UI_songTitle);
-
 
 		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
 		check_voices.checked = _song.needsVoices;
