@@ -5,8 +5,6 @@ import haxe.ds.Vector as HaxeVector; //apparently denpa uses vectors, which is r
 #if sys
 import sys.*;
 import sys.io.*;
-#elseif js
-import js.html.*;
 #end
 
 #if LUA_ALLOWED
@@ -39,6 +37,20 @@ import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxDestroyUtil;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxSubState;
+import flixel.addons.display.FlxGridOverlay;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.FlxObject;
+import flixel.util.FlxSave;
+import flixel.util.FlxStringUtil;
+
+//others
+import openfl.display.BitmapData;
+import openfl.net.FileFilter;
+import openfl.geom.Rectangle;
+import openfl.utils.Assets as OpenFlAssets;
+import lime.utils.Assets;
+import haxe.Json;
 
 using StringTools;
 #end

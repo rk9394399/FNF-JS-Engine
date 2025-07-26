@@ -1,28 +1,14 @@
 package;
 
 import Song.SwagSong;
-import flixel.FlxG;
-import flixel.math.FlxMath;
-import flixel.sound.FlxSound;
-import flixel.text.FlxText;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
-import flixel.util.FlxSave;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import lime.app.Application;
-import openfl.utils.Assets;
 import shaders.RGBPalette.RGBShaderReference;
 import utils.CoolSystemStuff;
 
-using StringTools;
-
 #if sys
-import sys.FileSystem;
-import sys.io.File;
-import sys.io.Process;
 #else
-import openfl.utils.Assets;
 #end
 
 class CoolUtil

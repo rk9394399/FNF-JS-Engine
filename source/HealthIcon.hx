@@ -1,10 +1,6 @@
 package;
 
-import haxe.Json;
-import openfl.utils.Assets;
 import flixel.graphics.FlxGraphic;
-
-using StringTools;
 
 // metadatas for icons
 // allows for animated icons and such

@@ -1,41 +1,24 @@
 package;
 
-import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.input.keyboard.FlxKey;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
-import haxe.Json;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-#if MODS_ALLOWED
-import sys.FileSystem;
-import sys.io.File;
-#end
-import options.GraphicsSettingsSubState;
-//import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxAtlasFrames;
+// import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
-import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
-import flixel.sound.FlxSound;
+import flixel.input.keyboard.FlxKey;
 import flixel.system.ui.FlxSoundTray;
-import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
 import openfl.Assets;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import options.GraphicsSettingsSubState;
 
+#if MODS_ALLOWED
+#end
 #if VIDEOS_ALLOWED
 import VideoSprite;
 #end
 
-using StringTools;
 typedef TitleData =
 {
 
@@ -74,7 +57,7 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
-	
+
 	var titleTextColors:Array<FlxColor> = [0xFF33FFFF, 0xFF3333CC];
 	var titleTextAlphas:Array<Float> = [1, .64];
 
@@ -247,7 +230,7 @@ class TitleState extends MusicBeatState
 	{
 		if (!initialized)
 		{
-			if (!ClientPrefs.disableAprilFools) 
+			if (!ClientPrefs.disableAprilFools)
 			{
 			#if APRIL_FOOLS
 				if (date.getMonth() == 3 && date.getDate() == 1)
@@ -264,19 +247,19 @@ class TitleState extends MusicBeatState
 					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic), 0);
 				}
 			#end
-			} 
-			else 
+			}
+			else
 			{
 				if(FlxG.sound.music == null)
 				{
 					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic), 0);
-				}	
+				}
 			}
 		}
 
 		switch(ClientPrefs.daMenuMusic) // change this if you're making a source mod, like add your own or something
 		{
-			case 'Mashup' | 'VS Impostor' | 'VS Nonsense V2': 
+			case 'Mashup' | 'VS Impostor' | 'VS Nonsense V2':
 				Conductor.changeBPM(102);
 			case 'Dave & Bambi':
 				Conductor.changeBPM(148);
@@ -345,20 +328,20 @@ class TitleState extends MusicBeatState
 			titleText.animation.findByPrefix(animFrames, "ENTER IDLE");
 			titleText.animation.findByPrefix(animFrames, "ENTER FREEZE");
 		}
-		
+
 		if (animFrames.length > 0) {
 			newTitle = true;
-			
+
 			titleText.animation.addByPrefix('idle', "ENTER IDLE", 24);
 			titleText.animation.addByPrefix('press', ClientPrefs.flashing ? "ENTER PRESSED" : "ENTER FREEZE", 24);
 		}
 		else {
 			newTitle = false;
-			
+
 			titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
 			titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
 		}
-		
+
 		titleText.antialiasing = ClientPrefs.globalAntialiasing;
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
@@ -408,7 +391,7 @@ class TitleState extends MusicBeatState
 	}
 
 	var transitioning:Bool = false;
-	
+
 	var newTitle:Bool = false;
 	var titleTimer:Float = 0;
 
@@ -432,7 +415,7 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			#end
 		}
-		
+
 		if (newTitle) {
 			titleTimer += CoolUtil.boundTo(elapsed, 0, 1);
 			if (titleTimer > 2) titleTimer -= 2;
@@ -445,7 +428,7 @@ class TitleState extends MusicBeatState
 		*/
 
 
-		
+
 		sarcasmKeysBuffer += KeyboardFunctions.keypressToString();
 		if (sarcasmKeysBuffer.length >= 32)
 			sarcasmKeysBuffer = sarcasmKeysBuffer.substring(1);
@@ -472,18 +455,18 @@ class TitleState extends MusicBeatState
 				var timer:Float = titleTimer;
 				if (timer >= 1)
 					timer = (-timer) + 2;
-				
+
 				timer = FlxEase.quadInOut(timer);
-				
+
 				titleText.color = FlxColor.interpolate(titleTextColors[0], titleTextColors[1], timer);
 				titleText.alpha = FlxMath.lerp(titleTextAlphas[0], titleTextAlphas[1], timer);
 			}
-			
+
 			if(pressedEnter)
 			{
 				titleText.color = FlxColor.WHITE;
 				titleText.alpha = 1;
-				
+
 				if(titleText != null) titleText.animation.play('press');
 
 				FlxG.camera.flash(ClientPrefs.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 1);
@@ -660,8 +643,8 @@ private class KeyboardFunctions
 {
     /**
      * Just a simple function to determine which key was pressed. Good for sequential keypresses. An example of how to use this is by simply adding the value to a string in the update function.
-     * 
-     * Ex: 
+     *
+     * Ex:
      * ```
      * public var value:String = '';
      * override function update(elapsed:Float) {
