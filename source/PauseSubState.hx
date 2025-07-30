@@ -298,7 +298,7 @@ class PauseSubState extends MusicBeatSubstate
 					} else if (!PlayState.isStoryMode) {
 						FlxG.switchState(FreeplayState.new);
 					}
-					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
+					Paths.playMenuMusic(true);
 					PlayState.changedDifficulty = false;
 					PlayState.chartingMode = false;
 			case "Exit to Main Menu":
@@ -307,7 +307,7 @@ class PauseSubState extends MusicBeatSubstate
 
 					WeekData.loadTheFirstEnabledMod();
 						FlxG.switchState(MainMenuState.new);
-					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
+					Paths.playMenuMusic(true);
 					PlayState.changedDifficulty = false;
 					PlayState.chartingMode = false;
 			case "Exit Game":
@@ -318,8 +318,7 @@ class PauseSubState extends MusicBeatSubstate
 					regenMenu();
 			case "Exit to your Mother":
 					trace ("YO MAMA");
-					var aLittleCrashing:FlxSprite = null;
-					aLittleCrashing.destroy();
+					throw "lol";
 				}
 			}
 		}

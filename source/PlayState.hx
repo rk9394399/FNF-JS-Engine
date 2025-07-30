@@ -4751,7 +4751,7 @@ class PlayState extends MusicBeatState
 				if (storyPlaylist.length <= 0)
 				{
 					WeekData.loadTheFirstEnabledMod();
-					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
+					Paths.playMenuMusic(true);
 					#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 
 					canResync = false;
@@ -4800,7 +4800,7 @@ class PlayState extends MusicBeatState
 					endingTime = haxe.Timer.stamp();
 					FlxG.switchState(new RenderingDoneSubState(endingTime - startingTime));
 				}
-				FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
+				Paths.playMenuMusic(true);
 				changedDifficulty = false;
 			}
 			transitioning = true;
