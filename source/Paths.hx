@@ -519,7 +519,7 @@ class Paths
 		#end
 	}
     
-    static public function playMenuMusic(force:Bool = false):Void
+    static public function playMenuMusic(force:Bool = false, volume:Float = 1):Void
     {
         if (FlxG.sound.music == null || force) {
             var playAprilFools:Bool = false;
@@ -534,14 +534,14 @@ class Paths
             #end
 
             if (playAprilFools) {
-                FlxG.sound.playMusic(Paths.music('aprilFools'), 0);
+                FlxG.sound.playMusic(Paths.music('aprilFools'), volume);
             } else {
                 final musicName = 'freakyMenu-' + ClientPrefs.daMenuMusic;
 
                 #if MODS_ALLOWED
                 playModMusic('freakyMenu', musicName); // TODO: add HScript support here
                 #else
-                FlxG.sound.playMusic(music(musicName), 0);
+                FlxG.sound.playMusic(music(musicName), volume);
                 #end
             }
         }

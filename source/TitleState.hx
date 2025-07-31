@@ -438,7 +438,7 @@ class TitleState extends MusicBeatState
 			switch (sickBeats)
 			{
 				case 1:
-                    Paths.playMenuMusic(true);
+                    Paths.playMenuMusic(true, 0);
 
 					FlxG.sound.music.fadeIn(4, 0, 0.7);
 				case 2:
