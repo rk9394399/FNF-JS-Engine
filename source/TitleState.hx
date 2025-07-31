@@ -165,7 +165,7 @@ class TitleState extends MusicBeatState
 	{
 		if (!initialized)
 		{
-            Paths.playMenuMusic();
+            Paths.playMenuMusic(true, 0);
 		}
 
 		switch(ClientPrefs.daMenuMusic) // change this if you're making a source mod, like add your own or something
@@ -438,8 +438,6 @@ class TitleState extends MusicBeatState
 			switch (sickBeats)
 			{
 				case 1:
-                    Paths.playMenuMusic(true, 0);
-
 					FlxG.sound.music.fadeIn(4, 0, 0.7);
 				case 2:
 					#if PSYCH_WATERMARKS
