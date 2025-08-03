@@ -515,6 +515,34 @@ class Paths
 		return inst;
 		#end
 	}
+    
+    static public function playMenuMusic(force:Bool = false, volume:Float = 1):Void
+    {
+        if (FlxG.sound.music == null || force) {
+            var playAprilFools:Bool = false;
+
+            // Check if it's April Fools and not disabled in settings
+            #if APRIL_FOOLS
+            if (!ClientPrefs.disableAprilFools) {
+	            final date:Date = Date.now();
+                if (date.getMonth() == 3 && date.getDate() == 1)
+                    playAprilFools = true;
+            }
+            #end
+
+            if (playAprilFools) {
+                FlxG.sound.playMusic(Paths.music('aprilFools'), volume);
+            } else {
+                final musicName = 'freakyMenu-' + ClientPrefs.daMenuMusic;
+
+                #if MODS_ALLOWED
+                playModMusic('freakyMenu', musicName); // TODO: add HScript support here
+                #else
+                FlxG.sound.playMusic(music(musicName), volume);
+                #end
+            }
+        }
+    }
 
 	//For song events.
 	static public function songEvents(song:String, ?difficulty:String, ?onlyEventsString:Bool = false):String {
@@ -890,6 +918,16 @@ class Paths
 
 	inline static public function modsImagesJson(key:String)
 		return modFolders('images/' + key + '.json');
+
+    public static function playModMusic(file:String, fallback:String):Void {
+        final path = Paths.modFolders('music/' + file + '.ogg');
+        if (FileSystem.exists(path)) {
+            final sound = Sound.fromFile(path);
+            FlxG.sound.playMusic(sound, 0, true);
+        } else {
+            FlxG.sound.playMusic(Paths.music(fallback), 0);
+        }
+    }
 
 	static public function modFolders(key:String) {
 		if(currentModDirectory != null && currentModDirectory.length > 0) {

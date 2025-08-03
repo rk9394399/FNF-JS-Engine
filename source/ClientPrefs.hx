@@ -112,6 +112,7 @@ class ClientPrefs { //default settings if it can't find a save file containing y
 	public static var noHitFuncs:Bool = false;
 	public static var noSkipFuncs:Bool = false;
 	public static var lessBotLag:Bool = false;
+	public static var maxNotes:Int = 0;
 
 	//Secret Debug
 	public static var noGunsRNG:Bool = false;

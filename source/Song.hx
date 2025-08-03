@@ -3,9 +3,6 @@ package;
 import Section.SwagSection;
 import haxe.format.JsonParser;
 
-#if sys
-#end
-
 
 typedef SwagSong =
 {
@@ -64,10 +61,23 @@ class Song
 
 	private static function onLoadJson(songJson:Dynamic) // Convert old charts to newest format
 	{
-		if(songJson.gfVersion == null)
-		{
-			songJson.gfVersion = songJson.player3;
-			songJson.player3 = null;
+		try {
+			if(songJson.gfVersion == null)
+			{
+				songJson.gfVersion = songJson.player3;
+				if (Reflect.hasField(songJson, 'player3'))
+                    Reflect.deleteField(songJson, 'player3');
+			}	
+		}
+		catch(e:Dynamic){
+			final errStr:String = e.toString();
+			if (errStr.startsWith('Invalid') && errStr.endsWith('gfVersion'))
+				throw "Psych 1.0 charts are not supported!";
+			else
+			{
+				songJson.gfVersion = "null";
+				trace(e);
+			}
 		}
 
 		if(songJson.events == null)
@@ -93,6 +103,11 @@ class Song
 				}
 			}
 		}
+        /*
+		if (Reflect.hasField(songJson, "format") && StringTools.contains(Reflect.field(songJson, 'format'), 'psych_v1')){
+            throw "Psych Engine 1.0 charts are not supported!";
+        }
+        */
 	}
 
 	public static function hasDifficulty(songName:String, difficulty:String):Bool

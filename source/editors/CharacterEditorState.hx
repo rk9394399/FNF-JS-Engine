@@ -531,6 +531,10 @@ class CharacterEditorState extends MusicBeatState
 		//tab_group.add(hideGhostButton);
 		tab_group.add(highlightGhost);
 		tab_group.add(ghostAlphaSlider);
+
+		for (i in tab_group.members)
+			i.cameras = [camMenu];
+		
 		UI_box.addGroup(tab_group);
 	}
 
@@ -561,6 +565,7 @@ class CharacterEditorState extends MusicBeatState
 		});
 		charDropDown.selectedLabel = _char;
 		reloadCharacterDropDown();
+  		charDropDown.header.cameras = [camMenu]; //haxe is stupid, i have to set the header manually or it renders behind the menu
 
 		var reloadCharacter:FlxButton = new FlxButton(140, 20, "Reload Char", function()
 		{
@@ -620,6 +625,10 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(charDropDown);
 		tab_group.add(reloadCharacter);
 		tab_group.add(templateCharacter);
+
+		for (i in tab_group.members)
+			i.cameras = [camMenu];
+
 		UI_box.addGroup(tab_group);
 	}
 
@@ -776,6 +785,7 @@ class CharacterEditorState extends MusicBeatState
 			if (barToUse == 3) healthBarBG.color = FlxColor.fromRGB(char.winningColorArray[0], char.winningColorArray[1], char.winningColorArray[2]);
 		});
 		barShowDropDown.selectedLabel = 'Normal';
+		barShowDropDown.header.cameras = [camMenu];
 
 		tab_group.add(new FlxText(15, saveCharacterButton.y + 110, 0, 'Noteskin:'));
 		noteskinText = new FlxUIInputText(15, saveCharacterButton.y + 128, 200, '', 8);
@@ -818,6 +828,10 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(losingColorStepperG);
 		tab_group.add(losingColorStepperB);
 		tab_group.add(saveCharacterButton);
+
+		for (i in tab_group.members)
+			i.cameras = [camMenu];
+
 		UI_characterbox.addGroup(tab_group);
 	}
 
@@ -870,6 +884,9 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(new FlxText(shakeIntensityStepper.x, shakeIntensityStepper.y - 18, 0, 'Shake Intensity:'));
 		tab_group.add(new FlxText(shakeDurationStepper.x, shakeDurationStepper.y - 18, 0, 'Shake Duration:'));
 
+		for (i in tab_group.members)
+			i.cameras = [camMenu];
+
 		UI_characterbox.addGroup(tab_group);
 	}
 
@@ -903,6 +920,7 @@ class CharacterEditorState extends MusicBeatState
 			var indicesStr:String = anim.indices.toString();
 			animationIndicesInputText.text = indicesStr.substr(1, indicesStr.length - 2);
 		});
+		animationDropDown.header.cameras = [camMenu];
 
 		var addUpdateButton:FlxButton = new FlxButton(70, animationIndicesInputText.y + 30, "Add/Update", function() {
 			var indices:Array<Int> = [];
@@ -988,6 +1006,10 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(addUpdateButton);
 		tab_group.add(removeButton);
 		tab_group.add(animationDropDown);
+
+		for (i in tab_group.members)
+			i.cameras = [camMenu];
+
 		UI_characterbox.addGroup(tab_group);
 	}
 

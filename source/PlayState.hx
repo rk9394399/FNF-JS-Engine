@@ -469,6 +469,8 @@ class PlayState extends MusicBeatState
 			FlxG.animationTimeScale = ClientPrefs.framerate / targetFPS;
 			if (!ClientPrefs.oldFFmpegMode) initRender();
 		}
+
+		if (noteLimit == 0) noteLimit = 2147483647;
 		theListBotplay = CoolUtil.coolTextFile(Paths.txt('botplayText'));
 
 		if (FileSystem.exists(Paths.getSharedPath('sounds/hitsounds/' + ClientPrefs.hitsoundType.toLowerCase() + '.txt')))
@@ -3157,6 +3159,8 @@ class PlayState extends MusicBeatState
 	public var takenTime:Float = haxe.Timer.stamp();
 	public var totalRenderTime:Float = 0;
 
+	var noteLimit = ClientPrefs.maxNotes;
+	var limitNC = 0;
 	public var amountOfRenderedNotes:Float = 0;
 	public var maxRenderedNotes:Float = 0;
 	public var skippedCount:Float = 0;
@@ -3739,7 +3743,7 @@ class PlayState extends MusicBeatState
 
 		if (ClientPrefs.showRendered)
 		{
-			if (!ffmpegMode) renderedTxt.text = 'Rendered/Skipped: ${formatNumber(amountOfRenderedNotes)}/${formatNumber(skippedCount)}/${formatNumber(notes.members.length + sustainNotes.members.length)}/${formatNumber(maxSkipped)}';
+			if (!ffmpegMode) renderedTxt.text = 'Rendered/Skipped: ${formatNumber(amountOfRenderedNotes)}/${formatNumber(skippedCount)}/${formatNumber(maxRenderedNotes)}/${formatNumber(maxSkipped)}';
 			else renderedTxt.text = 'Rendered Notes: ${formatNumber(amountOfRenderedNotes)}/${formatNumber(maxRenderedNotes)}/${formatNumber(notes.members.length + sustainNotes.members.length)}';
 		}
 
@@ -4751,7 +4755,7 @@ class PlayState extends MusicBeatState
 				if (storyPlaylist.length <= 0)
 				{
 					WeekData.loadTheFirstEnabledMod();
-					FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
+					Paths.playMenuMusic(true);
 					#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 
 					canResync = false;
@@ -4800,7 +4804,7 @@ class PlayState extends MusicBeatState
 					endingTime = haxe.Timer.stamp();
 					FlxG.switchState(new RenderingDoneSubState(endingTime - startingTime));
 				}
-				FlxG.sound.playMusic(Paths.music('freakyMenu-' + ClientPrefs.daMenuMusic));
+				Paths.playMenuMusic(true);
 				changedDifficulty = false;
 			}
 			transitioning = true;
@@ -5459,6 +5463,7 @@ class PlayState extends MusicBeatState
 			notesAddedCount = 0;
 			NOTE_SPAWN_TIME = (ClientPrefs.dynamicSpawnTime ? (1600 / songSpeed) : 1600 * ClientPrefs.noteSpawnTime);
 			targetNote = unspawnNotes[notesAddedCount];
+			limitNC = (notes.countLiving() + sustainNotes.countLiving());
 
 			if (!targetNote.wasHit)
 			{
@@ -5474,13 +5479,13 @@ class PlayState extends MusicBeatState
 			}
 			if (ClientPrefs.showNotes || !ClientPrefs.showNotes && !cpuControlled)
 			{
-				while (targetNote.strumTime - Conductor.songPosition < (NOTE_SPAWN_TIME / targetNote.multSpeed)) {
+				while (limitNC < noteLimit && targetNote.strumTime - Conductor.songPosition < (NOTE_SPAWN_TIME / targetNote.multSpeed)) {
 					spawnedNote = new Note();
 					(targetNote.isSustainNote ? sustainNotes : notes).add(spawnedNote);
 					spawnedNote.setupNoteData(targetNote);
 
 					if (!ClientPrefs.noSpawnFunc) callOnLuas('onSpawnNote', [(!spawnedNote.isSustainNote ? notes.members.indexOf(spawnedNote) : sustainNotes.members.indexOf(spawnedNote)), targetNote.noteData, targetNote.noteType, targetNote.isSustainNote]);
-					notesAddedCount++;
+					notesAddedCount++; limitNC++;
 					if (unspawnNotes[notesAddedCount] != null) targetNote = unspawnNotes[notesAddedCount];
 					else break;
 				}
@@ -5909,7 +5914,7 @@ class PlayState extends MusicBeatState
 			note.active = note.visible = false;
 			if (!ClientPrefs.lowQuality || !cpuControlled)
 				note.kill();
-			notes.remove(note, true);
+			(note.isSustainNote ? sustainNotes : notes).remove(note, true);
 			note.destroy();
 		}
 		killNotes = [];
