@@ -2,15 +2,12 @@ package;
 
 import flixel.animation.FlxAnimationController;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFramesCollection;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import lime.media.AudioBuffer;
 import lime.media.vorbis.VorbisFile;
 import openfl.display.BitmapData;
-import openfl.display.BitmapData;
-import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Rectangle;
 import openfl.media.Sound;
