@@ -204,7 +204,7 @@ class VisualsUISubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Enable Note Colors',
-			'If unchecked, notes won\'t be able to use your currently set colors. \nI think this decreases loading time.',
+			'If unchecked, notes won\'t be able to use your currently set colors.',
 			'enableColorShader',
 			'bool',
 			true);
