@@ -18,6 +18,8 @@ class HealthIcon extends FlxSprite
 	private var isPlayer:Bool = false;
 	private var char:String = '';
 	public var iconMeta:IconMeta;
+	
+	public var animated:Bool = false;
 
 	var initialWidth:Float = 0;
 	var initialHeight:Float = 0;
@@ -45,7 +47,7 @@ class HealthIcon extends FlxSprite
 	}
 
 	public var iconOffsets:Array<Float> = [0, 0];
-	public function changeIcon(char:String) {
+	public function changeIcon(char:String, ?isAnimated:Bool = true) {
 		if(this.char != char) {
 			if (char.length < 1)
 				char = 'face';
@@ -62,28 +64,42 @@ class HealthIcon extends FlxSprite
 				// throw "Don't delete the placeholder icon";
 				trace("Warning: could not find the placeholder icon, expect crashes!");
 			}
+			
+			animated = (Paths.fileExists('images/$name.xml', TEXT) && isAnimated);
 
 			//cleaned up to be less confusing. also floor is used so iSize has to definitively be 3 to use winning icons
 			final iSize:Float = Math.round(iconAsset.width / iconAsset.height);
 			initialWidth = width;
 			initialHeight = height;
-			if (Paths.fileExists('images/$name.xml', TEXT)) {
-				frames = Paths.getSparrowAtlas(name);
-				final iconPrefixes = checkAvailablePrefixes(Paths.getPath('images/$name.xml', TEXT));
-				final hasWinning = iconPrefixes.get('winning');
-				final hasLosing = iconPrefixes.get('losing');
-				final fps:Float = iconMeta.fps ??= 24;
-				final loop = fps > 0;
+			if (animated) {
+				try {
+					frames = Paths.getSparrowAtlas(name);
+					if (frames == null){
+						trace("Couldn't find any frames for the icons atlas!");
+						changeIcon('bf');
+						return;
+					}
+					final iconPrefixes = checkAvailablePrefixes(Paths.getPath('images/$name.xml', TEXT));
+					final hasWinning = iconPrefixes.get('winning');
+					final hasLosing = iconPrefixes.get('losing');
+					final fps:Float = iconMeta.fps ??= 24;
+					final loop = fps > 0;
 
-				// Always add "normal"
-				animation.addByPrefix('normal', 'normal', fps, loop, isPlayer);
+					// Always add "normal"
+					animation.addByPrefix('normal', 'normal', fps, loop, isPlayer);
 
-				// Add "losing", fallback to "normal"
-				animation.addByPrefix('losing', hasLosing ? 'losing' : 'normal', fps, loop, isPlayer);
+					// Add "losing", fallback to "normal"
+					animation.addByPrefix('losing', hasLosing ? 'losing' : 'normal', fps, loop, isPlayer);
 
-				// Add "winning", fallback to "normal"
-				animation.addByPrefix('winning', hasWinning ? 'winning' : 'normal', fps, loop, isPlayer);
-				playAnim('normal');
+					// Add "winning", fallback to "normal"
+					animation.addByPrefix('winning', hasWinning ? 'winning' : 'normal', fps, loop, isPlayer);
+					playAnim('normal');
+				}
+				catch(e:Dynamic){
+					trace(e);
+					changeIcon(char, false);
+					return;
+				}
 			} else {
 				loadGraphic(iconAsset, true, Math.floor(iconAsset.width / iSize), Math.floor(iconAsset.height));
 				iconOffsets[0] = (width - 150) / iSize;
