@@ -2,15 +2,12 @@ package;
 
 import flixel.animation.FlxAnimationController;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFramesCollection;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import lime.media.AudioBuffer;
 import lime.media.vorbis.VorbisFile;
 import openfl.display.BitmapData;
-import openfl.display.BitmapData;
-import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Rectangle;
 import openfl.media.Sound;
@@ -539,7 +536,7 @@ class Paths
                 final musicName = 'freakyMenu-' + ClientPrefs.daMenuMusic;
 
                 #if MODS_ALLOWED
-                playModMusic('freakyMenu', musicName); // TODO: add HScript support here
+                playModMusic('freakyMenu', musicName, volume); // TODO: add HScript support here
                 #else
                 FlxG.sound.playMusic(music(musicName), volume);
                 #end
@@ -922,13 +919,13 @@ class Paths
 	inline static public function modsImagesJson(key:String)
 		return modFolders('images/' + key + '.json');
 
-    public static function playModMusic(file:String, fallback:String):Void {
+    public static function playModMusic(file:String, fallback:String, volume:Float = 1):Void {
         final path = Paths.modFolders('music/' + file + '.ogg');
         if (FileSystem.exists(path)) {
             final sound = Sound.fromFile(path);
-            FlxG.sound.playMusic(sound, 0, true);
+            FlxG.sound.playMusic(sound, volume, true);
         } else {
-            FlxG.sound.playMusic(Paths.music(fallback), 0);
+            FlxG.sound.playMusic(Paths.music(fallback), volume);
         }
     }
 

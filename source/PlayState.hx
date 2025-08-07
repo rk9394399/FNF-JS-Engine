@@ -134,9 +134,7 @@ class PlayState extends MusicBeatState
 	public var sustainNotes:FlxTypedGroup<Note>;
 	public var killNotes:Array<Note> = [];
 	public var unspawnNotes:Array<PreloadedChartNote> = [];
-	public var unspawnNotesCopy:Array<PreloadedChartNote> = [];
 	public var eventNotes:Array<EventNote> = [];
-	public var eventNotesCopy:Array<EventNote> = [];
 
 	//Handles the new epic mega sexy cam code that i've done
 	public var camFollow:FlxPoint;
@@ -168,6 +166,7 @@ class PlayState extends MusicBeatState
 	public var missCombo:Int = 0;
 
 	var notesAddedCount:Int = 0;
+	var eventIndex:Int = 0;
 	var notesToRemoveCount:Int = 0;
 	var oppNotesToRemoveCount:Int = 0;
 	public var iconBopsThisFrame:Int = 0;
@@ -187,7 +186,6 @@ class PlayState extends MusicBeatState
 	private var healthBarBG:AttachedSprite; //The image used for the health bar.
 	public var healthBar:FlxBar;
 	var songPercent:Float = 0;
-	var playbackRateDecimal:Float = 0;
 
 	private var timeBarBG:AttachedSprite;
 	public var timeBar:FlxBar;
@@ -213,9 +211,6 @@ class PlayState extends MusicBeatState
 
 	var pixelShitPart1:String = "";
 	var pixelShitPart2:String = '';
-
-	public var oldNPS:Float = 0;
-	public var oldOppNPS:Float = 0;
 
 	private var lerpingScore:Bool = false;
 
@@ -269,12 +264,6 @@ class PlayState extends MusicBeatState
 	public var jackingtime:Float = 0;
 	public var minSpeed:Float = 0.1;
 	public var maxSpeed:Float = 10;
-
-	private var npsIncreased:Bool = false;
-	private var npsDecreased:Bool = false;
-
-	private var oppNpsIncreased:Bool = false;
-	private var oppNpsDecreased:Bool = false;
 
 	public var botplaySine:Float = 0;
 	public var botplayTxt:FlxText;
@@ -2891,8 +2880,6 @@ class PlayState extends MusicBeatState
 
 		unspawnNotes.sort(sortByTime);
 		eventNotes.sort(sortByTime);
-		unspawnNotesCopy = unspawnNotes.copy();
-		eventNotesCopy = eventNotes.copy();
 		generatedMusic = true;
 
 		sectionsLoaded = 0;
@@ -3685,18 +3672,17 @@ class PlayState extends MusicBeatState
 
 			destroyNotes();
 
-			while(eventNotes.length > 0 && Conductor.songPosition > eventNotes[0].strumTime) {
-
+			while(eventNotes.length > 0 && eventNotes[eventIndex] != null && Conductor.songPosition > eventNotes[eventIndex].strumTime) {
 				var value1:String = '';
-				if(eventNotes[0].value1 != null)
-					value1 = eventNotes[0].value1;
+				if(eventNotes[eventIndex].value1 != null)
+					value1 = eventNotes[eventIndex].value1;
 
 				var value2:String = '';
-				if(eventNotes[0].value2 != null)
-					value2 = eventNotes[0].value2;
+				if(eventNotes[eventIndex].value2 != null)
+					value2 = eventNotes[eventIndex].value2;
 
-				triggerEventNote(eventNotes[0].event, value1, value2, eventNotes[0].strumTime);
-				eventNotes.shift();
+				triggerEventNote(eventNotes[eventIndex].event, value1, value2, eventNotes[eventIndex].strumTime);
+				eventIndex++;
 			}
 		}
 
@@ -3724,11 +3710,10 @@ class PlayState extends MusicBeatState
 				if (SONG.needsVoices) setVocalsTime(0);
 				lastUpdateTime = 0.0;
 				Conductor.songPosition = 0;
+				notesAddedCount = eventIndex = 0;
 
 				if (SONG.song.toLowerCase() != 'anti-cheat-song')
 				{
-					unspawnNotes = unspawnNotesCopy.copy();
-					eventNotes = eventNotesCopy.copy();
 						var noteIndex:Int = 0;
 						while (unspawnNotes.length > 0 && unspawnNotes[noteIndex] != null)
 						{
@@ -3896,29 +3881,20 @@ class PlayState extends MusicBeatState
 
 	public function loopCallback(startingPoint:Float = 0)
 	{
-		var notesToKill:Int = 0;
-		var eventsToRemove:Int = 0;
 		KillNotes(); //kill any existing notes
 		FlxG.sound.music.time = startingPoint;
 		if (SONG.needsVoices) setVocalsTime(startingPoint);
 		lastUpdateTime = startingPoint;
 		Conductor.songPosition = startingPoint;
+		notesAddedCount = eventIndex = 0;
 
-		unspawnNotes = unspawnNotesCopy.copy();
-		eventNotes = eventNotesCopy.copy();
 		for (n in unspawnNotes)
 			if (n.strumTime <= startingPoint)
-				notesToKill++;
+				notesAddedCount++;
 
 		for (e in eventNotes)
 			if (e.strumTime <= startingPoint)
-				eventsToRemove++;
-
-		if (notesToKill > 0)
-			unspawnNotes.splice(0, notesToKill);
-
-		if (eventsToRemove > 0)
-			eventNotes.splice(0, eventsToRemove);
+				eventIndex++;
 
 		if (!ClientPrefs.showNotes)
 		{
@@ -4816,8 +4792,8 @@ class PlayState extends MusicBeatState
 		while (group.length > 0) {
 			group.remove(group.members[0], true);
 		}
-		unspawnNotes = [];
-		eventNotes = [];
+		//unspawnNotes = [];
+		//eventNotes = [];
 	}
 
 	public function restartSong(noTrans:Bool = true)
@@ -5458,20 +5434,20 @@ class PlayState extends MusicBeatState
 	var spawnedNote:Note;
 	function spawnNotes()
 	{
-		if (unspawnNotes[0] != null)
+		if (unspawnNotes[notesAddedCount] != null)
 		{
-			notesAddedCount = 0;
+			//notesAddedCount = 0;
 			NOTE_SPAWN_TIME = (ClientPrefs.dynamicSpawnTime ? (1600 / songSpeed) : 1600 * ClientPrefs.noteSpawnTime);
 			targetNote = unspawnNotes[notesAddedCount];
 			limitNC = (notes.countLiving() + sustainNotes.countLiving());
 
-			if (!targetNote.wasHit)
+			if (targetNote != null && !targetNote.wasHit)
 			{
-				while (targetNote != null && targetNote.strumTime <= Conductor.songPosition - ClientPrefs.noteOffset) {
+				while (targetNote.strumTime <= Conductor.songPosition - ClientPrefs.noteOffset) {
 					targetNote.wasHit = true;
 					targetNote.mustPress ? goodNoteHit(null, targetNote) : opponentNoteHit(null, targetNote);
 					notesAddedCount++;
-					if (unspawnNotes[notesAddedCount] != null) targetNote = unspawnNotes[notesAddedCount];
+					if (unspawnNotes[notesAddedCount+1] != null) targetNote = unspawnNotes[notesAddedCount];
 					else break;
 					skippedCount++;
 					if (skippedCount > maxSkipped) maxSkipped = skippedCount;
@@ -5486,12 +5462,10 @@ class PlayState extends MusicBeatState
 
 					if (!ClientPrefs.noSpawnFunc) callOnLuas('onSpawnNote', [(!spawnedNote.isSustainNote ? notes.members.indexOf(spawnedNote) : sustainNotes.members.indexOf(spawnedNote)), targetNote.noteData, targetNote.noteType, targetNote.isSustainNote]);
 					notesAddedCount++; limitNC++;
-					if (unspawnNotes[notesAddedCount] != null) targetNote = unspawnNotes[notesAddedCount];
+					if (unspawnNotes[notesAddedCount+1] != null) targetNote = unspawnNotes[notesAddedCount];
 					else break;
 				}
 			}
-			if (notesAddedCount > 0)
-				unspawnNotes.splice(0, notesAddedCount);
 		}
 	}
 
@@ -5986,6 +5960,8 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.pitch = 1;
 		cpp.vm.Gc.enable(true);
 		KillNotes();
+		unspawnNotes = [];
+		eventNotes = [];
 		MusicBeatState.windowNamePrefix = Assets.getText(Paths.txt("windowTitleBase", "preload"));
 		if(ffmpegMode) {
 			if (FlxG.fixedTimestep) {
