@@ -4,11 +4,10 @@ import Achievements;
 import Character.Boyfriend;
 import Conductor.Rating;
 import DialogueBoxPsych;
-import FunkinLua;
 import Note.EventNote;
 import Note.PreloadedChartNote;
 import Note;
-import Section.SwagSection;
+import Section.SwagSection;	
 import Shaders;
 import Song.SwagSong;
 import StageData;
@@ -52,7 +51,6 @@ class PlayState extends MusicBeatState
 	public var boyfriendMap:Map<String, Boyfriend> = new Map();
 	public var dadMap:Map<String, Character> = new Map();
 	public var gfMap:Map<String, Character> = new Map();
-	public var variables:Map<String, Dynamic> = new Map();
 	public var modchartTweens:Map<String, FlxTween> = new Map<String, FlxTween>();
 	public var modchartSprites:Map<String, ModchartSprite> = new Map<String, ModchartSprite>();
 	public var modchartTimers:Map<String, FlxTimer> = new Map<String, FlxTimer>();
@@ -383,8 +381,10 @@ class PlayState extends MusicBeatState
 	var boyfriendIdled:Bool = false;
 
 	// Lua shit
+	#if LUA_ALLOWED
 	public var luaArray:Array<FunkinLua> = [];
 	private var luaDebugGroup:FlxTypedGroup<DebugLuaText>;
+	#end
 	public var introSoundsSuffix:String = '';
 
 	// Debug buttons
@@ -1718,7 +1718,7 @@ class PlayState extends MusicBeatState
 
 	public function addTextToDebug(text:String, color:FlxColor) {
 		#if LUA_ALLOWED
-		var newText:FunkinLua.DebugLuaText = luaDebugGroup.recycle(DebugLuaText);
+		var newText:DebugLuaText = luaDebugGroup.recycle(DebugLuaText);
 		newText.text = text;
 		newText.color = color;
 		newText.disableTime = 6;
@@ -1897,7 +1897,7 @@ class PlayState extends MusicBeatState
 	}
   }
 
-	public function getLuaObject(tag:String, text:Bool=true):FlxSprite {
+	public function getLuaObject(tag:String, text:Bool=true):Dynamic {
 		if(modchartSprites.exists(tag)) return modchartSprites.get(tag);
 		if(text && modchartTexts.exists(tag)) return modchartTexts.get(tag);
 		if(variables.exists(tag)) return variables.get(tag);
@@ -5959,17 +5959,21 @@ class PlayState extends MusicBeatState
 	}
 
 	override function destroy() {
+		#if LUA_ALLOWED
 		for (lua in luaArray) {
 			lua.call('onDestroy', []);
 			lua.stop();
 		}
 		luaArray = [];
+		#end
 
 		if (camFollow != null) camFollow.put();
 
-		#if hscript
+		/*
+		#if HSCRIPT_ALLOWED
 		if(FunkinLua.hscript != null) FunkinLua.hscript = null;
 		#end
+		*/
 
 		stagesFunc(function(stage:BaseStage) stage.destroy());
 

@@ -7,10 +7,6 @@ import lime.app.Application;
 import shaders.RGBPalette.RGBShaderReference;
 import utils.CoolSystemStuff;
 
-#if sys
-#else
-#end
-
 class CoolUtil
 {
 	public static var defaultDifficulties:Array<String> = ['Easy', 'Normal', 'Hard'];
@@ -479,7 +475,7 @@ class CoolUtil
 
 	inline public static function boundTo(value:Float, min:Float, max:Float):Float
 	{
-		return Math.max(min, Math.min(max, value));
+		return clamp(value, min, max);
 	}
 
 	inline public static function clamp(value:Float, min:Float, max:Float):Float
@@ -605,12 +601,7 @@ class CoolUtil
 
 	public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{
-		var dumbArray:Array<Int> = [];
-		for (i in min...max)
-		{
-			dumbArray.push(i);
-		}
-		return dumbArray;
+		return [for (i in min...max) i];
 	}
 
 	public static function browserLoad(site:String)
