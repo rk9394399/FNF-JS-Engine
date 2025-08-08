@@ -79,6 +79,28 @@ class CoolUtil
 		return (m / snap);
 	}
 
+	public static function isVersionNewer(versionA:String, versionB:String):Bool {
+		var partsA = versionA.split(".").map(Std.parseInt);
+		var partsB = versionB.split(".").map(Std.parseInt);
+
+		// Pad shorter version with zeros (e.g. "1.2" becomes "1.2.0")
+		while (partsA.length < partsB.length) partsA.push(0);
+		while (partsB.length < partsA.length) partsB.push(0);
+
+		for (i in 0...partsA.length) {
+			if (partsA[i] > partsB[i]){
+				trace("versionA is greater!");
+				return true;	
+			}
+			if (partsA[i] < partsB[i]){
+				trace("versionA is less!");
+				return false;
+			}
+		}
+
+		return false; // Equal versions
+	}
+
 	#if desktop
 	public static var resW:Float = 1;
 	public static var resH:Float = 1;
