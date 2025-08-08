@@ -3243,10 +3243,16 @@ class FunkinLua {
 
 	public function set(variable:String, data:Dynamic) {
 		#if LUA_ALLOWED
-		if(lua == null) {
+		if (lua == null)
+			return;
+
+		if (Type.typeof(data) == TFunction) {
+			// Bind as a callable Lua function
+			Lua_helper.add_callback(lua, variable, data);
 			return;
 		}
 
+		// Otherwise, treat it like a variable
 		Convert.toLua(lua, data);
 		Lua.setglobal(lua, variable);
 		#end
