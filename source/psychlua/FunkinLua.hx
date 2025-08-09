@@ -3247,7 +3247,7 @@ class FunkinLua {
 		if (lua == null)
 			return;
 
-		if (Type.typeof(data) == TFunction) {
+		if (Reflect.isFunction(data)) {
 			// Bind as a callable Lua function
 			Lua_helper.add_callback(lua, variable, data);
 			return;
