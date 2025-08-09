@@ -19,9 +19,11 @@ import flixel.util.FlxSort;
 import lime.system.System;
 import objects.*;
 import openfl.events.KeyboardEvent;
+#if SHADERS_ALLOWED
 import openfl.filters.BitmapFilter;
 import openfl.filters.ShaderFilter;
 import shaders.ErrorHandledShader;
+#end
 import utils.*;
 
 
@@ -719,7 +721,7 @@ class PlayState extends MusicBeatState
 				{
 					if(file.endsWith('.lua') && !filesPushed.contains(file))
 					{
-						luaArray.push(new FunkinLua(folder + file));
+						new FunkinLua(folder + file);
 						filesPushed.push(file);
 					}
 				}
@@ -1540,7 +1542,7 @@ class PlayState extends MusicBeatState
 				{
 					if(file.endsWith('.lua') && !filesPushed.contains(file))
 					{
-						luaArray.push(new FunkinLua(folder + file));
+						new FunkinLua(folder + file);
 						filesPushed.push(file);
 					}
 				}
@@ -1589,13 +1591,13 @@ class PlayState extends MusicBeatState
 		startingTime = haxe.Timer.stamp();
 	}
 
-	#if ( sys)
+	#if (SHADERS_ALLOWED)
 	public var runtimeShaders:Map<String, Array<String>> = new Map<String, Array<String>>();
 	public function createRuntimeShader(shaderName:String):ErrorHandledRuntimeShader
 	{
 		if(!ClientPrefs.shaders) return new ErrorHandledRuntimeShader(shaderName);
 
-		#if (MODS_ALLOWED && sys)
+		#if (MODS_ALLOWED && SHADERS_ALLOWED)
 		if(!runtimeShaders.exists(shaderName) && !initLuaShader(shaderName))
 		{
 			FlxG.log.warn('Shader $shaderName is missing!');
@@ -1798,12 +1800,15 @@ class PlayState extends MusicBeatState
 			{
 				if(script.scriptName == luaFile) return;
 			}
-			luaArray.push(new FunkinLua(luaFile));
+			if(doPush) new FunkinLua(luaFile);
 		}
 		#end
 	}
 
 	public function addShaderToCamera(cam:String,effect:Dynamic){//STOLE FROM ANDROMEDA	// actually i got it from old psych engine
+		#if SHADERS_ALLOWED
+		if (!ClientPrefs.shaders)
+			return;
 		switch(cam.toLowerCase()) {
 			case 'camhud' | 'hud':
 				camHUDShaders.push(effect);
@@ -1836,9 +1841,13 @@ class PlayState extends MusicBeatState
 					Reflect.setProperty(OBJ,"shader", effect.shader);
 				}
 		}
+		#end
   }
 
   public function removeShaderFromCamera(cam:String,effect:ShaderEffect){
+	#if SHADERS_ALLOWED
+	if (!ClientPrefs.shaders)
+		return;
 	switch(cam.toLowerCase()) {
 		case 'camhud' | 'hud':
 			camHUDShaders.remove(effect);
@@ -1864,8 +1873,12 @@ class PlayState extends MusicBeatState
 				Reflect.setProperty(OBJ,"shader", null);
 			}
 		}
+	#end
   }
   public function clearShaderFromCamera(cam:String){
+	#if SHADERS_ALLOWED
+	if (!ClientPrefs.shaders)
+		return;
 	switch(cam.toLowerCase()) {
 		case 'camhud' | 'hud':
 			camHUDShaders = [];
@@ -1884,6 +1897,7 @@ class PlayState extends MusicBeatState
 			var newCamEffects:Array<BitmapFilter>=[];
 			camGame.filters = newCamEffects;
 	}
+	#end
   }
 
 	public function getLuaObject(tag:String, text:Bool=true):Dynamic {
@@ -4356,14 +4370,14 @@ class PlayState extends MusicBeatState
 			}
 
 			case 'Rainbow Eyesore':
-				#if linux
-				#if LUA_ALLOWED
+				#if (linux && LUA_ALLOWED)
 				addTextToDebug('Rainbow shader does not work on Linux right now!', FlxColor.RED);
-				#else
+				return;
+				#elseif linux
 				trace('Rainbow shader does not work on Linux right now!');
-				#end
 				return;
 				#end
+				#if SHADERS_ALLOWED
 				if(ClientPrefs.flashing && ClientPrefs.shaders) {
 					var timeRainbow:Int = Std.parseInt(value1);
 					var speedRainbow:Float = Std.parseFloat(value2);
@@ -4377,6 +4391,7 @@ class PlayState extends MusicBeatState
 					screenshader.shader.uampmul.value[0] = 1;
 					screenshader.Enabled = true;
 				}
+				#end
 			case 'Popup':
 				var title:String = (value1);
 				var message:String = (value2);
@@ -5939,6 +5954,8 @@ class PlayState extends MusicBeatState
 			lua.stop();
 		}
 		luaArray = [];
+		FunkinLua.customFunctions.clear();
+		FunkinLua.registeredFunctions.clear();
 		#end
 
 		if (camFollow != null) camFollow.put();
