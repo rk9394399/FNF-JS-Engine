@@ -140,19 +140,19 @@ class FunkinLua {
 		set('altAnim', false);
 		set('gfSection', false);
 
-		set('npsSpeedMult', PlayState.instance.npsSpeedMult);
+		set('npsSpeedMult', game.npsSpeedMult);
 
 		// these things are useless
-		set('polyphonyOppo', PlayState.instance.polyphonyOppo);
-		set('polyphonyBF', PlayState.instance.polyphonyBF);
+		set('polyphonyOppo', game.polyphonyOppo);
+		set('polyphonyBF', game.polyphonyBF);
 
 		// Gameplay settings
-		set('healthGainMult', PlayState.instance.healthGain);
-		set('healthLossMult', PlayState.instance.healthLoss);
-		set('playbackRate', PlayState.instance.playbackRate);
-		set('instakillOnMiss', PlayState.instance.instakillOnMiss);
-		set('botPlay', PlayState.instance.cpuControlled);
-		set('practice', PlayState.instance.practiceMode);
+		set('healthGainMult', game.healthGain);
+		set('healthLossMult', game.healthLoss);
+		set('playbackRate', game.playbackRate);
+		set('instakillOnMiss', game.instakillOnMiss);
+		set('botPlay', game.cpuControlled);
+		set('practice', game.practiceMode);
 
 		for (i in 0...4) {
 			set('defaultPlayerStrumX' + i, 0);
@@ -162,12 +162,12 @@ class FunkinLua {
 		}
 
 		// Default character positions woooo
-		set('defaultBoyfriendX', PlayState.instance.BF_X);
-		set('defaultBoyfriendY', PlayState.instance.BF_Y);
-		set('defaultOpponentX', PlayState.instance.DAD_X);
-		set('defaultOpponentY', PlayState.instance.DAD_Y);
-		set('defaultGirlfriendX', PlayState.instance.GF_X);
-		set('defaultGirlfriendY', PlayState.instance.GF_Y);
+		set('defaultBoyfriendX', game.BF_X);
+		set('defaultBoyfriendY', game.BF_Y);
+		set('defaultOpponentX', game.DAD_X);
+		set('defaultOpponentY', game.DAD_Y);
+		set('defaultGirlfriendX', game.GF_X);
+		set('defaultGirlfriendY', game.GF_Y);
 
 		// Character shit
 		set('boyfriendName', PlayState.SONG.player1);
@@ -215,31 +215,6 @@ class FunkinLua {
 				Lua_helper.add_callback(lua, name, func);
 		}
 
-		// custom substate
-		registerFunction("openCustomSubstate", function(name:String, pauseGame:Bool = false) {
-			if(pauseGame)
-			{
-				PlayState.instance.persistentUpdate = false;
-				PlayState.instance.persistentDraw = true;
-				PlayState.instance.paused = true;
-				if(FlxG.sound.music != null) {
-					FlxG.sound.music.pause();
-					PlayState.instance.vocals.pause();
-				}
-			}
-			PlayState.instance.openSubState(new CustomSubstate(name));
-		});
-
-		registerFunction("closeCustomSubstate", function() {
-			if(CustomSubstate.instance != null)
-			{
-				PlayState.instance.closeSubState();
-				CustomSubstate.instance = null;
-				return true;
-			}
-			return false;
-		});
-
 		// shader shit
 		registerFunction("initLuaShader", function(name:String, glslVersion:Int = 120) {
 			if(!ClientPrefs.shaders) return false;
@@ -256,7 +231,7 @@ class FunkinLua {
 			if(!ClientPrefs.shaders) return false;
 
 			#if (MODS_ALLOWED && SHADERS_ALLOWED)
-			if(!PlayState.instance.runtimeShaders.exists(shader) && !initLuaShader(shader))
+			if(!game.runtimeShaders.exists(shader) && !initLuaShader(shader))
 			{
 				LuaUtils.luaTrace(lua, 'setSpriteShader | Shader $shader is missing! Make sure you\'ve initalized your shader first!', false, false, FlxColor.RED);
 				return false;
@@ -269,7 +244,7 @@ class FunkinLua {
 			}
 
 			if(leObj != null) {
-				var arr:Array<String> = PlayState.instance.runtimeShaders.get(shader);
+				var arr:Array<String> = game.runtimeShaders.get(shader);
 				leObj.shader = new ErrorHandledRuntimeShader(shader, arr[0], arr[1]);
 				return true;
 			}
@@ -2017,7 +1992,7 @@ class FunkinLua {
 			return false;
 		});
 		registerFunction("setBlendMode", function(obj:String, blend:String = '') {
-			var real = PlayState.instance.getLuaObject(obj);
+			var real = game.getLuaObject(obj);
 			if(real!=null) {
 				real.blend = LuaUtils.blendModeFromString(blend);
 				return true;
@@ -2037,7 +2012,7 @@ class FunkinLua {
 			return false;
 		});
 		registerFunction("screenCenter", function(obj:String, pos:String = 'xy') {
-			var spr:FlxSprite = PlayState.instance.getLuaObject(obj);
+			var spr:FlxSprite = game.getLuaObject(obj);
 
 			if(spr==null){
 				var killMe:Array<String> = obj.split('.');
