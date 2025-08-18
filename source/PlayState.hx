@@ -1715,12 +1715,11 @@ class PlayState extends MusicBeatState
 		newText.disableTime = 6;
 		newText.alpha = 1;
 		newText.setPosition(10, 8 - newText.height);
-
+   newText.font = "old_windows.ttf";
 		luaDebugGroup.forEachAlive(function(spr:DebugLuaText) {
 			spr.y += newText.height + 2;
 		});
 		luaDebugGroup.add(newText);
-		newText.setFormat(Paths.font("old_windows.ttf"));
 
 		Sys.println(text);
 		#end
