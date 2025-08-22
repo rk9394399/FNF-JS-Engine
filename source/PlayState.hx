@@ -6548,23 +6548,23 @@ class PlayState extends MusicBeatState
 
 				// Rating Name
 
-				if (ratingStuff.length <= 0) // NOW it should fall back to this as a safe guard
-				{
+				if (ratingStuff.length <= 0) {
 					ratingName = 'Error!';
-					return;
 				}
-				if(ratingPercent >= 1)
-				{
-					ratingName = ratingStuff[ratingStuff.length-1][0]; //Uses last string
-				}
-				else
-				{
-					for (i in 0...ratingStuff.length-1)
+				else {
+					if(ratingPercent >= 1)
 					{
-						if(ratingPercent < ratingStuff[i][1])
+						ratingName = ratingStuff[ratingStuff.length-1][0]; //Uses last string
+					}
+					else
+					{
+						for (i in 0...ratingStuff.length-1)
 						{
-							ratingName = ratingStuff[i][0];
-							break;
+							if(ratingPercent < ratingStuff[i][1])
+							{
+								ratingName = ratingStuff[i][0];
+								break;
+							}
 						}
 					}
 				}
