@@ -12,7 +12,7 @@ import openfl.events.UncaughtErrorEvent;
 
 /**
  * Crash Handler.
- * @author YoshiCrafter29, MAJigsaw77 and HomuHomu833
+ * @author YoshiCrafter29 and MAJigsaw77
 */
 
 class CrashHandler {
@@ -115,7 +115,7 @@ class Crash extends MusicBeatState {
 		ohNo2.y = 64;
 		add(ohNo2);
 
-		var ohNo3:FlxText = new FlxText(0, 0, 1280, "Crash Handler by YoshiCrafter29, MAJigsaw77 and HomuHomu833\nCrash UI State by Nael2xd");
+		var ohNo3:FlxText = new FlxText(0, 0, 1280, "Crash Handler by YoshiCrafter29 and MAJigsaw77\nCrash UI State by Nael2xd");
 		ohNo3.setFormat(Paths.font('vcr.ttf'), 18, FlxColor.WHITE);
 		ohNo3.alpha = 0;
 		ohNo3.screenCenter();

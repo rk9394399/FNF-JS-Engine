@@ -17,7 +17,6 @@ import android.widget.Toast;
 /**
  * @author SayofTheLor
  * @author zacksgamerz
- * @author mcagabe19
  */
 class SSPlugin extends flixel.FlxBasic
 {
