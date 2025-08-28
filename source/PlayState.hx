@@ -1717,12 +1717,11 @@ class PlayState extends MusicBeatState
 		newText.disableTime = 6;
 		newText.alpha = 1;
 		newText.setPosition(10, 8 - newText.height);
-
+   		newText.setFormat(Paths.font("old_windows.ttf"));
 		luaDebugGroup.forEachAlive(function(spr:DebugLuaText) {
 			spr.y += newText.height + 2;
 		});
 		luaDebugGroup.add(newText);
-		newText.setFormat(Paths.font("old_windows.ttf"));
 
 		Sys.println(text);
 		#end
@@ -6551,23 +6550,23 @@ class PlayState extends MusicBeatState
 
 				// Rating Name
 
-				if (ratingStuff.length <= 0) // NOW it should fall back to this as a safe guard
-				{
+				if (ratingStuff.length <= 0) {
 					ratingName = 'Error!';
-					return;
 				}
-				if(ratingPercent >= 1)
-				{
-					ratingName = ratingStuff[ratingStuff.length-1][0]; //Uses last string
-				}
-				else
-				{
-					for (i in 0...ratingStuff.length-1)
+				else {
+					if(ratingPercent >= 1)
 					{
-						if(ratingPercent < ratingStuff[i][1])
+						ratingName = ratingStuff[ratingStuff.length-1][0]; //Uses last string
+					}
+					else
+					{
+						for (i in 0...ratingStuff.length-1)
 						{
-							ratingName = ratingStuff[i][0];
-							break;
+							if(ratingPercent < ratingStuff[i][1])
+							{
+								ratingName = ratingStuff[i][0];
+								break;
+							}
 						}
 					}
 				}
@@ -6746,3 +6745,4 @@ class PlayState extends MusicBeatState
 		FlxG.autoPause = ClientPrefs.autoPause;
 	}
 }
+

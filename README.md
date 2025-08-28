@@ -99,7 +99,7 @@ to start you off, disabling Videos should be simple, simply Delete the line `"VI
 
 same goes for *Lua Scripts*, comment out or delete the line with `LUA_ALLOWED`, this and other customization options are all available within the `Project.xml` file.
 
-# Contributers
+# Contributors
 
 @JordanSantiagoYT (of course)
 - He's the owner... What do you think?
@@ -115,9 +115,6 @@ same goes for *Lua Scripts*, comment out or delete the line with `LUA_ALLOWED`, 
 
 @PatoFlamejanteTV
 - Small coding, also made a PDF guide for JS Engine.
-
-@HomuHomu833
-- Ported JS Engine to mobile
 
 ### The rest of the lovely contributors on GitHub! (Psych and JS Engine)
 <a href="https://github.com/JordanSantiagoYT/FNF-JS-Engine/graphs/contributors">
