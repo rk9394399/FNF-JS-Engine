@@ -176,6 +176,7 @@ class ClientPrefs { //default settings if it can't find a save file containing y
 	public static var quality:Int = 50;
 	public static var renderGCRate:Float = 5.0;
 	public static var showRemainingTime:Bool = false;
+	public static var renderPath:String = 'assets/gameRenders/';
 
 	//Misc
 	public static var JSEngineRecharts:Bool = false;

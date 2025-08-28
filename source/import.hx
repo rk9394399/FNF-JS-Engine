@@ -58,5 +58,8 @@ import openfl.utils.Assets as OpenFlAssets;
 import lime.utils.Assets;
 import haxe.Json;
 
+// utils
+import utils.*;
+
 using StringTools;
 #end

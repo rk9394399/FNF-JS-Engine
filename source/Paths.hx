@@ -14,8 +14,6 @@ import openfl.media.Sound;
 import openfl.system.System;
 import openfl.utils.AssetType;
 
-#if sys
-#end
 #if cpp
 import cpp.vm.Gc;
 #elseif hl
@@ -203,9 +201,7 @@ class Paths
 	inline public static function directoriesWithFile(path:String, fileToFind:String, mods:Bool = true)
 	{
 		var foldersToCheck:Array<String> = [];
-		#if sys
-		if(FileSystem.exists(path + fileToFind))
-		#end
+		if(#if sys FileSystem.exists(path + fileToFind) || #end Assets.exists(path + fileToFind))
 			foldersToCheck.push(path + fileToFind);
 
 		#if MODS_ALLOWED
@@ -515,7 +511,7 @@ class Paths
 		return inst;
 		#end
 	}
-    
+
     static public function playMenuMusic(force:Bool = false, volume:Float = 1):Void
     {
         if (FlxG.sound.music == null || force) {

@@ -19,8 +19,9 @@ haxelib git flxanimate https://github.com/Dot-Stuff/flxanimate 768740a56b26aa0c0
 haxelib git linc_luajit https://github.com/th2l-devs/linc_luajit --quiet
 haxelib git funkin.vis https://github.com/FunkinCrew/funkVis 22b1ce089dd924f15cdc4632397ef3504d464e90 --quiet
 haxelib git grig.audio https://gitlab.com/haxe-grig/grig.audio.git --quiet
-haxelib git hxdiscord_rpc https://github.com/MAJigsaw77/hxdiscord_rpc --quiet
-haxelib git hxvlc https://github.com/th2l-devs/hxvlc --quiet
+haxelib git hxdiscord_rpc https://github.com/MAJigsaw77/hxdiscord_rpc --quiet --skip-dependencies
+haxelib git hxvlc https://github.com/th2l-devs/hxvlc --quiet --skip-dependencies
+haxelib git hxnativefiledialog https://github.com/MAJigsaw77/hxnativefiledialog --quiet --skip-dependencies
 @echo off
 echo Finished!
 pause

@@ -8,7 +8,6 @@ class StartupState extends MusicBeatState
 	var skipTxt:FlxText;
 
 	var maxIntros:Int = 7;
-	var date:Date = Date.now();
 
 	var canChristmas = false;
 	var canAutism = false;
@@ -61,22 +60,17 @@ class StartupState extends MusicBeatState
 
 	override public function create():Void
 	{
-		if (date.getMonth() == 11 && date.getDate() >= 16 && date.getDate() <= 31) //Only triggers if the date is between 12/16 and 12/31
+		if (DateUtils.isChristmas()) //Only triggers if the date is between 12/16 and 12/31
 		{
-			canChristmas = true;
-			maxIntros += 1; //JOLLY SANTA!!!
+				canChristmas = true;
+				maxIntros += 1; //JOLLY SANTA!!!
 		}
-		#if APRIL_FOOLS
-			else if (date.getMonth() == 3 && date.getDate() == 1) // funny
-			{
-				if (!ClientPrefs.disableAprilFools)
-				{
+		else if (DateUtils.isAprilFools()) // funny
+		{
 				canAutism = true;
 				maxIntros += 1; //autism!!!!!!!!!!!!!!!!!!!!!!oubgrebiugerbiuegrs
 				// burger
-				}
-			}
-		#end
+		}
 		FlxTransitionableState.skipNextTransIn = true;
 		FlxTransitionableState.skipNextTransOut = true;
 		logo = new FlxSprite().loadGraphic(Paths.image('sillyLogo', 'splash'));

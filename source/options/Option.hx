@@ -41,6 +41,11 @@ class Option
 		this.defaultValue = defaultValue;
 		this.options = options;
 
+		/*
+		if (variable == 'renderPath')
+				specialOption = true;
+		*/
+
 		if(defaultValue == 'null variable value')
 		{
 			switch(type)

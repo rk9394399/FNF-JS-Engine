@@ -7,7 +7,7 @@ import DialogueBoxPsych;
 import Note.EventNote;
 import Note.PreloadedChartNote;
 import Note;
-import Section.SwagSection;	
+import Section.SwagSection;
 import Shaders;
 import Song.SwagSong;
 import StageData;
@@ -34,6 +34,8 @@ class PlayState extends MusicBeatState
 	public static var instance:PlayState;
 	public static var STRUM_X = 48.5;
 	public static var STRUM_X_MIDDLESCROLL = -278;
+
+	public var renderPath(default, null):String = ClientPrefs.renderPath;
 
 	public static var middleScroll:Bool = false;
 
@@ -458,7 +460,7 @@ class PlayState extends MusicBeatState
 			}
 			FlxG.fixedTimestep = true;
 			FlxG.animationTimeScale = ClientPrefs.framerate / targetFPS;
-			if (!ClientPrefs.oldFFmpegMode) initRender();
+			if (!ClientPrefs.oldFFmpegMode) initRender(renderPath);
 		}
 
 		if (noteLimit == 0) noteLimit = 2147483647;
@@ -1918,7 +1920,7 @@ class PlayState extends MusicBeatState
 	}
 
 	/***************/
-    /*    VIDEO    */
+  /*    VIDEO    */
 	/***************/
 	public var videoCutscene:VideoSprite = null;
 	public function startVideo(name:String, ?library:String = null, ?callback:Void->Void = null, forMidSong:Bool = false, canSkip:Bool = true, loop:Bool = false, playOnLoad:Bool = true)
@@ -6671,7 +6673,7 @@ class PlayState extends MusicBeatState
 	public static var process:Process;
 	var ffmpegExists:Bool = false;
 
-	private function initRender():Void
+	private function initRender(renderPath:String = "assets/gameRenders/", ?prefixName:String = null):Void
 	{
 		#if windows
 		if (!FileSystem.exists('ffmpeg.exe'))
@@ -6680,27 +6682,32 @@ class PlayState extends MusicBeatState
 			return;
 		}
 		#end
+		// Maybe check if it isn't an directory?
+		if (prefixName == null)
+				prefixName = Paths.formatToSongPath(SONG.song);
+		else if (prefixName.startsWith('/'))
+				prefixName = prefixName.substr(1);
 
-		if(!FileSystem.exists('assets/gameRenders/')) { //In case you delete the gameRenders folder
-			trace ('gameRenders folder not found! Creating the gameRenders folder...');
-            FileSystem.createDirectory('assets/gameRenders');
-        }
-		else
-		if(!FileSystem.isDirectory('assets/gameRenders/')) {
-			FileSystem.deleteFile('assets/gameRenders/');
-			FileSystem.createDirectory('assets/gameRenders/');
+		// TODO: make sure this *absolutely* checks if you input an proper path
+		if (!renderPath.endsWith('/'))
+				renderPath = haxe.io.Path.addTrailingSlash(renderPath);
+
+		if(!FileSystem.exists(renderPath)) { //In case you delete the render folder/it doesn't exist
+			trace ('$renderPath folder not found! Creating the $renderPath folder...');
+      FileSystem.createDirectory(renderPath);
+    }
+		else if (!FileSystem.isDirectory(renderPath)){
+				FileSystem.deleteFile(renderPath);
+				FileSystem.createDirectory(renderPath);
 		}
 
 		ffmpegExists = true;
 
-		var fileName = 'assets/gameRenders/' + Paths.formatToSongPath(SONG.song);
+		var fileName = '$renderPath$prefixName';
 		if(FileSystem.exists(fileName + '.mp4')) {
 			trace ('Duplicate video found! Adding anti-dupe...');
-			var dateNow:String = Date.now().toString();
-				dateNow = dateNow.replace(" ", "_");
-				dateNow = dateNow.replace(":", "'");
-            fileName += '-' + dateNow;
-        }
+      fileName += '-' + DateUtils.cleanedDate;
+    }
 
 		try{
 			process = new Process('ffmpeg', ['-v', 'quiet', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', lime.app.Application.current.window.width + 'x' + lime.app.Application.current.window.height, '-r', Std.string(targetFPS), '-i', '-', '-c:v', ClientPrefs.vidEncoder, '-b', Std.string(ClientPrefs.renderBitrate * 1000000), fileName + '.mp4']);

@@ -35,18 +35,29 @@ class MainMenuState extends MusicBeatState
 	var camFollowPos:FlxObject;
 	var debugKeys:Array<FlxKey>;
 
+	// tips thing
 	var tipTextMargin:Float = 10;
 	var tipTextScrolling:Bool = false;
 	var tipBackground:FlxSprite;
 	var tipText:FlxText;
+	var tipTimer:FlxTimer = new FlxTimer();
 	var isTweening:Bool = false;
 	var lastString:String = '';
+
+	var tipsArray:Array<String> = [];
+	var canDoTips:Bool = true; // in case the tips don't exist lol
 
 	override function create()
 	{
 		MusicBeatState.windowNameSuffix = " - Main Menu";
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
+
+		tipsArray = CoolUtil.coolTextFile(Paths.txt('funnyTips'));
+		if (tipsArray == null){
+				canDoTips = false;
+				trace('The tips don\'t exist!');
+		}
 
 		#if MODS_ALLOWED
 		Paths.pushGlobalMods();
@@ -94,15 +105,10 @@ class MainMenuState extends MusicBeatState
 		magenta.color = 0xFFfd719b;
 		add(magenta);
 
-		// magenta.scrollFactor.set();
-
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
 		var scale:Float = 1;
-		/*if(optionShit.length > 6) {
-			scale = 6 / optionShit.length;
-		}*/
 
 		for (i in 0...optionShit.length)
 		{
@@ -127,20 +133,18 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 1);
 
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 64, 0, "JS Engine v" + psychEngineJSVersion, 12);
-		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		add(versionShit);
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);
-		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		add(versionShit);
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v" + Application.current.meta.get('version'), 12);
-		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		add(versionShit);
-
-		// NG.core.calls.event.logEvent('swag').send();
+		var JSVersion:FlxText = new FlxText(12, FlxG.height - 64, 0, "JS Engine v" + psychEngineJSVersion, 12);
+		JSVersion.scrollFactor.set();
+		JSVersion.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(JSVersion);
+		var PsychVersion:FlxText = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);
+		PsychVersion.scrollFactor.set();
+		PsychVersion.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(PsychVersion);
+		var FNFVersion:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v" + Application.current.meta.get('version'), 12);
+		FNFVersion.scrollFactor.set();
+		FNFVersion.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(FNFVersion);
 
 		tipBackground = new FlxSprite();
 		tipBackground.scrollFactor.set();
@@ -155,14 +159,18 @@ class MainMenuState extends MusicBeatState
 		tipText.visible = ClientPrefs.tipTexts;
 		add(tipText);
 
-		tipBackground.makeGraphic(FlxG.width, Std.int((tipTextMargin * 2) + tipText.height), FlxColor.BLACK);
+		if (canDoTips)
+				tipBackground.makeGraphic(FlxG.width, Std.int((tipTextMargin * 2) + tipText.height), FlxColor.BLACK);
+		else if (tipBackground != null){
+			tipBackground.destroy();
+			tipBackground = null;
+		}
 
 		changeItem();
 
 		#if ACHIEVEMENTS_ALLOWED
 		// Unlocks "Freaky on a Friday Night" achievement if it's a Friday and between 18:00 PM and 23:59 PM
-		var leDate = Date.now();
-		if (leDate.getDay() == 5 && leDate.getHours() >= 18)
+		if (DateUtils.isFunkin())
 			Achievements.unlock('friday_night_play');
 
 		#if MODS_ALLOWED
@@ -180,13 +188,15 @@ class MainMenuState extends MusicBeatState
 	//credit to stefan2008 and sb engine for this code
 	function tipTextStartScrolling()
 	{
+		if (!canDoTips) return;
+
 		tipText.x = tipTextMargin;
 		tipText.y = -tipText.height;
 
-		new FlxTimer().start(1.0, function(timer:FlxTimer)
+		tipTimer.start(1.0, function(timer:FlxTimer)
 		{
 			FlxTween.tween(tipText, {y: tipTextMargin}, 0.3);
-			new FlxTimer().start(2.25, function(timer:FlxTimer)
+			tipTimer.start(2.25, function(timer:FlxTimer)
 			{
 				tipTextScrolling = true;
 			});
@@ -200,27 +210,26 @@ class MainMenuState extends MusicBeatState
 
 			FlxG.camera.zoom += 0.025;
 
+			FlxTween.cancelTweensOf(FlxG.camera);
 			FlxTween.tween(FlxG.camera, {zoom: 1}, Conductor.crochet / 1200, {ease: FlxEase.quadOut});
 		}
 	}
 	function changeTipText() {
-		var selectedText:String = '';
-		var textArray:Array<String> = CoolUtil.coolTextFile(Paths.txt('funnyTips'));
+		if (!canDoTips) return;
+		var selectedText = tipsArray[FlxG.random.int(0, tipsArray.length - 1)].replace('--', '\n');
+    while (selectedText == lastString && tipsArray.length > 1) {
+        selectedText = tipsArray[FlxG.random.int(0, tipsArray.length - 1)].replace('--', '\n');
+    }
+
+		lastString = selectedText;
 
 		tipText.alpha = 1;
 		isTweening = true;
-		selectedText = textArray[FlxG.random.int(0, (textArray.length - 1))].replace('--', '\n');
+		FlxTween.cancelTweensOf(tipText);
 		FlxTween.tween(tipText, {alpha: 0}, 1, {
 			ease: FlxEase.linear,
 			onComplete: function(freak:FlxTween) {
-				if (selectedText != lastString) {
-					tipText.text = selectedText;
-					lastString = selectedText;
-				} else {
-					selectedText = textArray[FlxG.random.int(0, (textArray.length - 1))].replace('--', '\n');
-					tipText.text = selectedText;
-				}
-
+				tipText.text = selectedText;
 				tipText.alpha = 0;
 
 				FlxTween.tween(tipText, {alpha: 1}, 1, {

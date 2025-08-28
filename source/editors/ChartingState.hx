@@ -34,10 +34,6 @@ import openfl.utils.ByteArray;
 import shaders.RGBPalette.RGBShaderReference;
 import shaders.RGBPalette;
 
-#if sys
-#end
-
-
 @:access(flixel.sound.FlxSound._sound)
 @:access(openfl.media.Sound.__buffer)
 
@@ -153,7 +149,6 @@ class ChartingState extends MusicBeatState
 	**/
 	var curSelectedNote:Array<Dynamic> = null;
 
-	var tempBpm:Float = 0;
 	var playbackSpeed:Float = 1;
 
 	var vocals:FlxSound = null;
@@ -385,11 +380,7 @@ class ChartingState extends MusicBeatState
 
 		FlxG.mouse.visible = true;
 
-		tempBpm = _song.bpm;
-
 		addSection();
-
-		// sections = _song.notes;
 
 		updateJsonData();
 		currentSongName = Paths.formatToSongPath(_song.song);
@@ -2397,7 +2388,7 @@ class ChartingState extends MusicBeatState
 					_song.speed = nums.value;
 
 				case 'song_bpm':
-					tempBpm = nums.value;
+					_song.bpm = nums.value;
 					Conductor.mapBPMChanges(_song);
 					Conductor.changeBPM(nums.value);
 
@@ -3053,8 +3044,6 @@ class ChartingState extends MusicBeatState
 				}
 			}
 		}
-
-		_song.bpm = tempBpm;
 
 		strumLineNotes.visible = quant.visible = vortex;
 

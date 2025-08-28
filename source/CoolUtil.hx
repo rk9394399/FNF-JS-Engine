@@ -5,7 +5,6 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import lime.app.Application;
 import shaders.RGBPalette.RGBShaderReference;
-import utils.CoolSystemStuff;
 
 class CoolUtil
 {
@@ -90,7 +89,7 @@ class CoolUtil
 		for (i in 0...partsA.length) {
 			if (partsA[i] > partsB[i]){
 				trace("versionA is greater!");
-				return true;	
+				return true;
 			}
 			if (partsA[i] < partsB[i]){
 				trace("versionA is less!");

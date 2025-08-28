@@ -41,7 +41,7 @@
       "type": "git",
       "dir": null,
       "ref": null,
-      "url": "https://github.com/th2l-devs/hxcpp"
+      "url": "https://github.com/JS-Engine-things/hxcpp"
     },
     {
       "name": "hxvlc",
@@ -108,6 +108,13 @@
       "dir": null,
       "ref": "master",
       "url": "https://github.com/moxie-coder/tjson"
-    }
+    },
+    {
+      "name": "hxnativefiledialog",
+      "type": "git",
+      "dir": null,
+      "ref": "main",
+      "url": "https://github.com/MAJigsaw77/hxnativefiledialog"
+    },
   ]
 }

@@ -259,14 +259,20 @@ class BaseOptionsMenu extends MusicBeatSubstate
 				usesCheckbox = false;
 			}
 
-			if(usesCheckbox)
+			if(usesCheckbox || curOption.specialOption)
 			{
-				if(controls.ACCEPT)
+				if(controls.ACCEPT && !curOption.specialOption)
 				{
 					FlxG.sound.play(Paths.sound((curOption.type == 'link' ? 'confirmMenu' : 'scrollMenu')));
 					if (curOption.type == 'bool') curOption.setValue((curOption.getValue() == true) ? false : true);
 					curOption.change();
 					reloadCheckboxes();
+				}
+				else if (controls.ACCEPT && curOption.specialOption)
+				{ // since it's not an checkbox
+					FlxG.sound.play(Paths.sound('confirmMenu'));
+					// curOption.setValue(curOption.getValue());
+					curOption.change();
 				}
 			} else {
 				if(controls.UI_LEFT || controls.UI_RIGHT) {
@@ -393,6 +399,22 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		if(option.type == 'percent') val *= 100;
 		var def:Dynamic = option.defaultValue;
 		option.text = text.replace('%v', val).replace('%d', def);
+	}
+
+	function refreshDescription(option:Option)
+	{
+	    if (curOption == option)
+	    {
+	        descText.text = option.description;
+					/*
+	        descText.screenCenter(Y);
+	        descText.y += 270;
+
+	        descBox.setPosition(descText.x - 10, descText.y - 10);
+	        descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
+	        descBox.updateHitbox();
+					*/
+	    }
 	}
 
 	function clearHold()

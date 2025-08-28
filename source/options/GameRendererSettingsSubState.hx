@@ -4,10 +4,20 @@ import Controls;
 import flixel.graphics.FlxGraphic;
 import flixel.input.keyboard.FlxKey;
 import openfl.Lib;
+import haxe.io.Path;
+#if hxnativefiledialog
+import hxnativefiledialog.NFD;
+import hxnativefiledialog.Types;
+#end
+/*
+import openfl.filesystem.File;
+import openfl.events.Event;
+*/
 
 class GameRendererSettingsSubState extends BaseOptionsMenu
 {
 	var fpsOption:Option;
+	var renderPathOption:Option;
 	public function new()
 	{
 		title = 'Game Renderer';
@@ -28,7 +38,7 @@ class GameRendererSettingsSubState extends BaseOptionsMenu
 			['None', 'Rendering Time', 'Time Remaining', 'Frame Time']);
 		addOption(option);
 
-        	var option:Option = new Option('Video Framerate',
+  	var option:Option = new Option('Video Framerate',
 			"How much FPS would you like for your videos?",
 			'targetFPS',
 			'float',
@@ -73,6 +83,21 @@ class GameRendererSettingsSubState extends BaseOptionsMenu
 			'libx264',
 			['libx264', 'libx264rgb', 'libx265', 'libxvid', 'libsvtav1', 'mpeg2video']);
 		addOption(option);
+
+		// I doubt this'd work on mobile (atleast for now I guess)
+		#if hxnativefiledialog
+		var option:Option = new Option('Output Path: ',
+		"Where the video should be put when finished rendering. Default: 'assets/gameRenders/'",
+			'renderPath',
+			'string',
+			'',
+			[]);
+		option.description += '\n\nCurrent Path: ${ClientPrefs.renderPath}';
+		option.onChange = changeOutputPath;
+		option.specialOption = true;
+		addOption(option);
+		renderPathOption = option;
+		#end
 
 		var option:Option = new Option('Classic Rendering Mode', //Name
 			'If checked, the game will use the old Rendering Mode from 1.20.0.',
@@ -122,6 +147,89 @@ class GameRendererSettingsSubState extends BaseOptionsMenu
 	{
 		fpsOption.scrollSpeed = fpsOption.getValue() / 2;
 	}
+
+	function changeOutputPath()
+	{
+		/*
+		var directory:File = File.documentsDirectory;
+		directory.browseForDirectory("Select Directory");
+		directory.addEventListener(Event.SELECT, directorySelected);
+		*/
+		#if hxnativefiledialog
+    var outPath:NFDCharStar_T = null;
+    var result:NFDResult_T = NFD.PickFolder(null, cpp.RawPointer.addressOf(outPath));
+
+    switch (result)
+    {
+        case NFD_OKAY:
+            if (outPath != null)
+            {
+                var cwd:String = Sys.getCwd().split('\\').join('/');
+                var selected:String = cast(outPath, String).split('\\').join('/');
+
+                if (!cwd.endsWith('/')) cwd += '/';
+                if (!selected.endsWith('/')) selected += '/';
+
+                var finalPath:String;
+                if (selected.startsWith(cwd))
+                {
+                    finalPath = selected.substr(cwd.length);
+                    if (finalPath == '') finalPath = './';  // Handle root case if needed
+                }
+                else
+                {
+                    finalPath = 'assets/gameRenders/';
+                }
+
+                ClientPrefs.renderPath = finalPath;
+                renderPathOption.description = "Where the video should be put when finished rendering, Default: 'assets/gameRenders/'";
+                renderPathOption.description += '\n\nCurrent Path: ' + finalPath;
+
+								renderPathOption.setValue(renderPathOption.getValue());
+
+								refreshDescription(renderPathOption);
+                cpp.Stdlib.nativeFree(untyped outPath);
+            }
+
+        case NFD_CANCEL:
+            trace("User cancelled folder selection.");
+
+        default:
+            trace("Error: " + NFD.GetError());
+    }
+    #else
+    trace("File dialog only supported on native (C++).");
+    #end
+	}
+
+	/*
+	function directorySelected(event:Event):Void
+	{
+		// ClientPrefs.renderPath = event.target.toString();
+		var file:File = cast(event.target, File);
+		if (file != null) {
+		    var abs:String = file.nativePath;
+		    var gameDir:String = Sys.getCwd(); // your game’s root
+		    if (abs.indexOf(gameDir) == 0) {
+		        ClientPrefs.renderPath = abs.substr(gameDir.length);
+		    } else {
+					if (!abs.startsWith('[object]'))
+							FlxG.log.warn("An absolute path cannot be used as an value.");
+					else
+							FlxG.log.warn("An error has occured! Expected: String, got Object");
+
+					ClientPrefs.renderPath = 'assets/gameRenders/';
+		    }
+		}
+		renderPathOption.description = "Where the video should be put when finished rendering. Default: 'assets/gameRenders/'";
+		renderPathOption.description += '\n\nCurrent Path: ${ClientPrefs.renderPath}';
+
+		renderPathOption.setValue(renderPathOption.getValue());
+		// renderPathOption.change();
+
+		refreshDescription(renderPathOption);
+	}
+	*/
 
 	function resetTimeScale()
 	{
