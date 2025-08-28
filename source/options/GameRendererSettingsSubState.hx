@@ -9,10 +9,6 @@ import haxe.io.Path;
 import hxnativefiledialog.NFD;
 import hxnativefiledialog.Types;
 #end
-/*
-import openfl.filesystem.File;
-import openfl.events.Event;
-*/
 
 class GameRendererSettingsSubState extends BaseOptionsMenu
 {
@@ -150,11 +146,6 @@ class GameRendererSettingsSubState extends BaseOptionsMenu
 
 	function changeOutputPath()
 	{
-		/*
-		var directory:File = File.documentsDirectory;
-		directory.browseForDirectory("Select Directory");
-		directory.addEventListener(Event.SELECT, directorySelected);
-		*/
 		#if hxnativefiledialog
     var outPath:NFDCharStar_T = null;
     var result:NFDResult_T = NFD.PickFolder(null, cpp.RawPointer.addressOf(outPath));
@@ -200,39 +191,5 @@ class GameRendererSettingsSubState extends BaseOptionsMenu
     #else
     trace("File dialog only supported on native (C++).");
     #end
-	}
-
-	/*
-	function directorySelected(event:Event):Void
-	{
-		// ClientPrefs.renderPath = event.target.toString();
-		var file:File = cast(event.target, File);
-		if (file != null) {
-		    var abs:String = file.nativePath;
-		    var gameDir:String = Sys.getCwd(); // your game’s root
-		    if (abs.indexOf(gameDir) == 0) {
-		        ClientPrefs.renderPath = abs.substr(gameDir.length);
-		    } else {
-					if (!abs.startsWith('[object]'))
-							FlxG.log.warn("An absolute path cannot be used as an value.");
-					else
-							FlxG.log.warn("An error has occured! Expected: String, got Object");
-
-					ClientPrefs.renderPath = 'assets/gameRenders/';
-		    }
-		}
-		renderPathOption.description = "Where the video should be put when finished rendering. Default: 'assets/gameRenders/'";
-		renderPathOption.description += '\n\nCurrent Path: ${ClientPrefs.renderPath}';
-
-		renderPathOption.setValue(renderPathOption.getValue());
-		// renderPathOption.change();
-
-		refreshDescription(renderPathOption);
-	}
-	*/
-
-	function resetTimeScale()
-	{
-		FlxG.timeScale = 1;
 	}
 }

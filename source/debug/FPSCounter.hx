@@ -1,11 +1,20 @@
 package debug;
 
 import debug.Memory;
-import lime.system.System;
+import lime.system.System as LimeSystem;
 import mem.GetTotalMemory;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
+#if cpp
+#if windows
+@:cppFileCode('#include <windows.h>')
+#elseif (ios || mac)
+@:cppFileCode('#include <mach-o/arch.h>')
+#else
+@:headerInclude('sys/utsname.h')
+#end
+#end
 class FPSCounter extends TextField
 {
 	public var currentFPS(default, null):Float;
@@ -102,7 +111,54 @@ class FPSCounter extends TextField
 			text += '\nCurrent state: ${Type.getClassName(Type.getClass(FlxG.state))}';
 			if (FlxG.state.subState != null)
 				text += '\nCurrent substate: ${Type.getClassName(Type.getClass(FlxG.state.subState))}';
-			#if !linux text += "\nOS: " + '${System.platformLabel} ${System.platformVersion}'; #end
+				if (LimeSystem.platformName == LimeSystem.platformVersion || LimeSystem.platformVersion == null)
+					text += '\nOS: ${LimeSystem.platformName}' #if cpp + ' ${getArch()}' #end;
+				else
+					text += '\nOS: ${LimeSystem.platformName}' #if cpp + ' ${getArch()}' #end + ' - ${LimeSystem.platformVersion}';
+
+
+			text += '\nVersion: ${MainMenuState.psychEngineJSVersion}' #if commit + '(Commit $MainMenuState.gitCommit)' #end;
 		}
 	}
+	#if cpp
+	#if windows
+	@:functionCode('
+		SYSTEM_INFO osInfo;
+
+		GetSystemInfo(&osInfo);
+
+		switch(osInfo.wProcessorArchitecture)
+		{
+			case 9:
+				return ::String("x86_64");
+			case 5:
+				return ::String("ARM");
+			case 12:
+				return ::String("ARM64");
+			case 6:
+				return ::String("IA-64");
+			case 0:
+				return ::String("x86");
+			default:
+				return ::String("Unknown");
+		}
+	')
+	#elseif (ios || mac)
+	@:functionCode('
+		const NXArchInfo *archInfo = NXGetLocalArchInfo();
+    	return ::String(archInfo == NULL ? "Unknown" : archInfo->name);
+	')
+	#else
+	@:functionCode('
+		struct utsname osInfo{};
+		uname(&osInfo);
+		return ::String(osInfo.machine);
+	')
+	#end
+	@:noCompletion
+	private function getArch():String
+	{
+		return null;
+	}
+	#end
 }

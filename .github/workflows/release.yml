@@ -3,19 +3,22 @@ name: Manual Release
 on:
   workflow_dispatch:
     inputs:
-      # tag:
-        # description: 'Tag for this release (e.g., v1.0.0)'
-        # required: true
+      tag_name:
+        description: "Release name (e.g. v1.0.5 or v1.2-rc1)"
+        required: true
       prerelease:
-        description: 'Mark as a pre-release? (true/false)'
-        default: 'false'
+        description: "Is this a prerelease?"
+        required: true
+        type: boolean
+      custom_message:
+        description: "Optional pre-changelog message"
         required: false
 
 permissions:
   contents: write
-  
+
 env:
-  TAG_NAME: nightly-${{ github.run_number }}
+  TAG_NAME: JS Engine - ${{ github.event.inputs.tag_name }} Release
 
 jobs:
   ensure-tag:
@@ -30,14 +33,34 @@ jobs:
 
       - name: Set tag name
         id: tagger
-        run: echo "tag_name=nightly-${{ github.run_number }}" >> $GITHUB_OUTPUT
+        run: echo "tag_name=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
 
       - name: Create and push tag
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git tag ${{ env.TAG_NAME }}
-          git push origin ${{ env.TAG_NAME }}
+          git tag ${{ github.event.inputs.tag_name }}
+          git push origin ${{ github.event.inputs.tag_name }}
+
+      - name: Prepare pre-changelog message
+        id: pre_changelog_message
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Preparing a pre-changelog message..."
+
+          BODY=""
+
+          if [ -n "${{ github.event.inputs.custom_message }}" ]; then
+            BODY="${{ github.event.inputs.custom_message }}\n${BODY}"
+          fi
+
+          {
+            echo "body<<EOF"
+            echo -e "$BODY"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+          echo -e "Final pre-changelog message:\n\n$BODY"
 
   build:
     name: Build Artifacts
@@ -66,10 +89,13 @@ jobs:
         uses: svenstaro/upload-release-action@2.5.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.TAG_NAME }}
+          tag: ${{ github.event.inputs.tag_name }}
           file: linuxBuild.zip
           asset_name: FNF-JS-Engine-linux.zip
+          draft: true
           prerelease: ${{ github.event.inputs.prerelease == 'true' }}
+          body: ${{ steps.build_body.outputs.body }}
+          generate_release_notes: true
           overwrite: true
 
   release-windows:
@@ -95,7 +121,10 @@ jobs:
           tag: ${{ env.TAG_NAME }}
           file: windowsBuild.zip
           asset_name: FNF-JS-Engine-windows.zip
+          draft: true
           prerelease: ${{ github.event.inputs.prerelease == 'true' }}
+          body: ${{ steps.build_body.outputs.body }}
+          generate_release_notes: true
           overwrite: true
 
   release-mac:
@@ -133,7 +162,10 @@ jobs:
           tag: ${{ env.TAG_NAME }}
           file: macBuild-intel.zip
           asset_name: FNF-JS-Engine-macOS-Intel.zip
+          draft: true
           prerelease: ${{ github.event.inputs.prerelease == 'true' }}
+          body: ${{ steps.build_body.outputs.body }}
+          generate_release_notes: true
           overwrite: true
 
       - name: Upload macBuild-arm
@@ -143,5 +175,8 @@ jobs:
           tag: ${{ env.TAG_NAME }}
           file: macBuild-arm.zip
           asset_name: FNF-JS-Engine-macOS-ARM.zip
+          draft: true
           prerelease: ${{ github.event.inputs.prerelease == 'true' }}
+          body: ${{ steps.build_body.outputs.body }}
+          generate_release_notes: true
           overwrite: true
