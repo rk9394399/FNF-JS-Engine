@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fashion Store</title>
+    <style>
+        /* Basic Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #222;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: #fff;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .hero {
+            background: #f4f4f4;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 15px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        section {
+            padding: 40px 20px;
+        }
+
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .product {
+            border: 1px solid #ddd;
+            padding: 15px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .product img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .contact form {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .contact label {
+            display: block;
+            margin-top: 15px;
+        }
+
+        .contact input, .contact textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        .contact button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        footer {
+            background: #222;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Fashion Store</h1>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#products">Products</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h2>New Season, New Style</h2>
+        <p>Discover the latest trends in fashion</p>
+        <a href="#products" class="btn">Shop Now</a>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products">
+        <h2 style="text-align: center; margin-bottom: 30px;">Our Products</h2>
+        <div class="products">
+            <div class="product">
+                <img src="https://via.placeholder.com/200x250?text=Dress" alt="Dress">
+                <h3>Summer Dress</h3>
+                <p>$49.99</p>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/200x250?text=Shirt" alt="Shirt">
+                <h3>Casual Shirt</h3>
+                <p>$29.99</p>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/200x250?text=Jacket" alt="Jacket">
+                <h3>Denim Jacket</h3>
+                <p>$69.99</p>
+            </div>
+            <div class="product">
+                <img src="https://via.placeholder.com/200x250?text=Sneakers" alt="Sneakers">
+                <h3>Trendy Sneakers</h3>
+                <p>$89.99</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2 style="text-align: center; margin-bottom: 30px;">Contact Us</h2>
+        <form>
+            <label for="name">Name</label>
+            <input type="text" id="name" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" rows="5" required></textarea>
+
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Fashion Store. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
